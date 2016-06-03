@@ -1,0 +1,63 @@
+Domain
+------
+* Student
+  * Id
+  * Grade
+  * Ability
+  * Race
+  * Gender
+
+* Assessment
+  * Id
+  * Items
+
+* Exam
+  * Id
+  * Student
+  * Responses
+      * Item
+      * Answer
+      * ResponseTimestamp
+  * Scores
+      * Item
+      * Value
+  * Assessment
+  * Session
+
+
+* Session
+  * Id
+  * Proctor
+  * StartDate
+  * EndDate
+  * Students
+  * Assessments
+
+Services
+--------
+ExamService
+  * getNextPage()
+    * getCurrentState(sessionId, studentId)
+    * getCurrentExamScores(sessionId, studentId) // We only need to do this sometimes, which is why it isn't part of the state
+    * getAssessmentItems
+    * getStudentAbility
+  * submitResponses()
+    * persistResponses() // Does scoring happen here?  Yes.
+
+UNKNOWNS/QUESTIONS
+------------------
+How/when does the adaptive assessment determine the next set of questions to display?
+* Scoring is synchronous
+  * There is metadata contained within the item to determine which scoring mechanism (python eq scorer or 'standard' scorer)
+  * TODO:  Need to test shutting down the itemscoring WAR and try to score a test
+* Items to display on a page are pre-fetched a page ahead
+  * When a Student views the first page, "several" items are fetched, enough for the first two pages
+    * For an adaptive test, the student's ability is used to determine which items are displayed
+  * When a student submits page 1, the updateResponses method starts fetching the items for page 3.
+    * This means the items for page 3 are based on the student's ability and responses from page 1.  Responses from page 2 do not affect the items displayed on page 3.
+  * When a student submits page 2, the updateResponses method starts fetching the items for page 4.  Since page 3 are already fetched, it can be served up immediately.
+
+
+
+
+
